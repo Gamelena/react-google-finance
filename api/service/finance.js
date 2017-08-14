@@ -99,15 +99,21 @@ class Finance {
     }
 
     getHistorical(socket, stock) {
-        client.get(stock + ':*', (err, response) => {
-            if (err) {
+        client.keys(stock + ':*', (err, keys) => {
+            console.log('keys:', keys);
+            if (err || keys === null) {
                 console.error(err);
-                response = [];
+                keys = [];
             }
-            socket.emit('fetch-historical', response);
-            console.log(JSON.parse(response));
+            this.iterateHistoricalKeys(socket, keys);
         });
 
+    }
+
+    iterateHistoricalKeys(socket, keys) {
+        client.mget(keys, (err, rows) => {
+            socket.emit('fetch-historical', rows);
+        });
     }
 }
 

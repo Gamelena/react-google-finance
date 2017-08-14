@@ -15,12 +15,14 @@ socket.on('fetch-stocks', data => {
 
 socket.on('fetch-historical', data => {
     console.log('fetch-historical', data);
+    document.getElementById('historical').style.display = 'block';
     ReactDOM.render(<ModalChart data={data}/>, document.getElementById('historical'));
 });
 
 const FinancialCharts = ({data}) => {
-    const handleClick = e => {
-        socket.emit('req-historical', {stock: data.ticker});
+    const handleClick = item => {
+        console.log(item);
+        socket.emit('req-historical', {stock: item.ticker});
     }
 
     return (
@@ -31,7 +33,7 @@ const FinancialCharts = ({data}) => {
         <XAxis dataKey="name" />
         <YAxis />
         <CartesianGrid strokeDasharray="3 3" />
-        <Tooltip onClick={(e)=> handleClick(e)} />
+        <Tooltip onClick={(item)=> handleClick(item)} />
         <Legend />
         <Bar type="monotone" dataKey="valor" onClick={(e)=> handleClick(e)} fill="#8884d8" />
       </BarChart>
