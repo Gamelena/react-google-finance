@@ -8,18 +8,21 @@ const ModalChart = ({data}) => {
     const hide = () => {
         document.getElementById('historical').style.display = 'none';
     }
+
+    const titles = data[0];
+
     return (
         <div className="static-modal">
             <Modal.Dialog>
                 <Modal.Header>
-                    <Modal.Title>{data.name}</Modal.Title>
+                    <Modal.Title>{titles.name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <LineChart
                         width={600} height={400} data={data}
                         margin={{top: 5, right: 30, left: 20, bottom: 5}}
                     >
-                        <XAxis dataKey="name"/>
+                        <XAxis dataKey="lastTradeDate"/>
                         <YAxis/>
                         <CartesianGrid strokeDasharray="3 3"/>
                         <Tooltip onClick={(e) => handleClick(e)}/>
