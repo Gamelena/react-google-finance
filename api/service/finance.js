@@ -1,5 +1,6 @@
 const https = require('https');
-const moment = require('moment');
+const redis = require('redis');
+const client = redis.createClient();
 const FETCH_INTERVAL = 5000;
 const PRETTY_PRINT_JSON = true;
 const API_REQUEST_ERROR_MESSAGE = 'How unfortunate! The API Request Failed';
@@ -38,16 +39,17 @@ class Finance {
                     }
 
                     let quotes = [];
-                    let dateTs;
                     let lastTradeDate;
-                    let ltTS;
-                    let dateTimeLT;
+                    let lastTradeTS;
+                    let quote;
+                    let stock;
 
                     dataObj.forEach(d => {
-                        ltTS = Date.parse(d.lt_dts);
-                        dateTimeLT = new Date(ltTS);
+                        lastTradeTS = Date.parse(d.lt_dts);
+                        lastTradeDate = new Date(lastTradeTS);
+                        stock = d.t;
 
-                        quotes.push({
+                        quote = {
                             ticker: d.t,
                             name: d.e + '/' + d.t,
                             exchange: d.e,
@@ -55,9 +57,16 @@ class Finance {
                             change: d.c,
                             changePercent: d.cp,
                             lastTradeTime: d.lt,
-                            lastTradeDate: lastTradeDate,
-                            dividend: d.div,
-                            yield: d.yld
+                            lastTradeDate: lastTradeDate
+                        };
+
+                        quotes.push(quote);
+
+                        client.set(stock + ':' + lastTradeTS, JSON.stringify(quote), (err, response) => {
+                            if (err) {
+                                console.error(err);
+                            }
+                            console.log(response);
                         });
                     });
 
