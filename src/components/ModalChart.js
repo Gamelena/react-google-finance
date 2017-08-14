@@ -22,7 +22,7 @@ const ModalChart = ({data}) => {
                         width={600} height={400} data={data}
                         margin={{top: 5, right: 30, left: 20, bottom: 5}}
                     >
-                        <XAxis dataKey="lastTradeDate"/>
+                        <XAxis dataKey="engTradeDate"/>
                         <YAxis/>
                         <CartesianGrid strokeDasharray="3 3"/>
                         <Tooltip onClick={(e) => handleClick(e)}/>

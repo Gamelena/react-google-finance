@@ -1,4 +1,5 @@
 const https = require('https');
+const moment = require('moment');
 const client = require('redis').createClient(process.env.REDIS_URL);
 const FETCH_INTERVAL = 30000;
 const API_REQUEST_ERROR_MESSAGE = 'How unfortunate! The API Request Failed';
@@ -112,11 +113,13 @@ class Finance {
 
     iterateHistoricalKeys(socket, keys) {
         let items = [];
+        let item = {};
         client.mget(keys, (err, rows) => {
             rows.forEach(row => {
-                console.log('row:', row);
-                items.push(JSON.parse(row));
-            })
+                item = JSON.parse(row);
+                item.engTradeDate = moment.utc(item.lastTradeDate).format("YYYY-MM-DD HH:mm:ss");
+                items.push(item);
+            });
 
             socket.emit('fetch-historical', items);
         });
