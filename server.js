@@ -2,7 +2,6 @@ const path = require('path');
 const express = require('express');
 const http = require('http');
 const finance = require('./api/service/finance');
-const redis = require("redis").createClient();
 const app = express();
 const PORT = process.env.PORT || 8080;
 const server = http.createServer(app);

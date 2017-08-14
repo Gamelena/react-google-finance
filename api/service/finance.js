@@ -1,6 +1,5 @@
 const https = require('https');
-console.log(process.env);
-// const client = require('redis').createClient( process.env.REDIS_URL );
+const client = require('redis').createClient( process.env.REDIS_URL );
 const FETCH_INTERVAL = 5000;
 const PRETTY_PRINT_JSON = true;
 const API_REQUEST_ERROR_MESSAGE = 'How unfortunate! The API Request Failed';
@@ -61,14 +60,13 @@ class Finance {
                         };
 
                         quotes.push(quote);
-/*
+
                         client.set(stock + ':' + lastTradeTS, JSON.stringify(quote), (err, response) => {
                             if (err) {
                                 console.error(err);
                             }
                             console.log(response);
                         });
-                        */
                     });
 
                     socket.emit('fetch-indicators', PRETTY_PRINT_JSON ? JSON.stringify(quotes, null, 4) : JSON.stringify(quotes));
