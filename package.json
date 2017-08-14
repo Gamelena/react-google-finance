@@ -5,11 +5,10 @@
   "main": "server.js",
   "scripts": {
     "build": "webpack --config webpack.prod.config.js",
-    "dev": "webpack-dev-server --hot --inline",
+    "dev": "npm run build && NODE_ENV=development node server.js",
     "lint": "eslint src/**",
     "lint:watch": "esw -w src/**",
     "start": "npm run build && NODE_ENV=production node server.js",
-    "startDebug": "node $NODE_DEBUG_OPTION ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot -d",
     "test": "mocha --compilers js:babel-core/register ./test/**/*.spec.js --require ignore-styles"
   },
   "author": "",
@@ -49,8 +48,8 @@
     "ignore-styles": "^5.0.1",
     "react-addons-test-utils": "^15.5.1",
     "react-test-renderer": "^15.5.4",
-    "webpack-dev-middleware": "^1.12.0",
+    "webpack-dev-middleware": "^1.4.0",
     "webpack-dev-server": "^2.7.1",
-    "webpack-hot-middleware": "^2.18.2"
+    "webpack-hot-middleware": "^2.6.0"
   }
 }

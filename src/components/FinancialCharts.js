@@ -1,41 +1,40 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import ModalChart from './ModalChart';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import IO from 'socket.io-client';
 import PropTypes from 'prop-types';
-const socket = IO();
+const socket = IO({ path: '/socket.io' });
 
-let data = [
-    { name: 'Page A', price: 4000.67},
-    { name: 'Page B', price: 3000.78},
-    { name: 'Page C', price: 2000.09},
-    { name: 'Page D', price: 2780},
-    { name: 'Page E', price: 1890},
-    { name: 'Page F', price: 2390},
-    { name: 'Page G', price: 3490},
-];
 
-socket.emit('indicator', {indicator: 'AAPL,ABC,MSFT,TSLA,F'});
+socket.emit('req-stocks', {stocks: 'AAPL,ABC,MSFT,TSLA,F'});
 
-socket.on('fetch-indicators', rawData => {
-    data = JSON.parse(rawData);
+socket.on('fetch-stocks', data => {
     ReactDOM.render(<FinancialCharts data={data}/>, document.getElementById('charts'));
 });
 
+socket.on('fetch-historical', data => {
+    console.log('fetch-historical', data);
+    ReactDOM.render(<ModalChart data={data}/>, document.getElementById('historical'));
+});
 
 const FinancialCharts = ({data}) => {
+    const handleClick = e => {
+        socket.emit('req-historical', {stock: data.ticker});
+    }
+
     return (
-      <LineChart
-        width={600} height={300} data={data}
+      <BarChart
+        width={800} height={600} data={data}
         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
       >
         <XAxis dataKey="name" />
         <YAxis />
         <CartesianGrid strokeDasharray="3 3" />
-        <Tooltip />
+        <Tooltip onClick={(e)=> handleClick(e)} />
         <Legend />
-        <Line type="monotone" dataKey="valor" stroke="#8884d8" activeDot={{ r: 8 }} />
-      </LineChart>
+        <Bar type="monotone" dataKey="valor" onClick={(e)=> handleClick(e)} fill="#8884d8" />
+      </BarChart>
     );
 };
 

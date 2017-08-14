@@ -7,6 +7,21 @@ const PORT = process.env.PORT || 8080;
 const server = http.createServer(app);
 const io = require('socket.io').listen(server,  { path: '/socket.io' });
 
+
+const webpack = require('webpack');
+const webpackConfig = require('./webpack.config');
+const compiler = webpack(webpackConfig);
+
+// Workaround para usar webpack hot reloading con socket.io, no disponible al usar webpack-dev-server.
+if (process.env.NODE_ENV !== 'production') {
+    app.use(require('webpack-dev-middleware')(compiler, {
+        noInfo: true,
+        publicPath: webpackConfig.output.publicPath,
+    }));
+    app.use(require('webpack-hot-middleware')(compiler));
+}
+// /Workaround
+
 app.use(express.static(path.join(__dirname, 'dist')));
 
 app.get('/', (req, res) => {
@@ -17,9 +32,13 @@ io.set('origins', '*:*');
 
 io.sockets.on('connection', socket => {
     console.log('connected');
-    socket.on('indicator', data => {
-        console.log(data);
-        finance.trackIndicator(socket, data.indicator);
+    socket.on('req-stocks', data => {
+        console.log('req-stocks', data);
+        finance.trackIndicator(socket, data.stocks);
+    });
+    socket.on('req-historical', data => {
+        console.log('req-historical', data);
+        finance.getHistorical(socket, data.stock);
     });
 });
 

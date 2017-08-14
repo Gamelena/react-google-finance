@@ -1,17 +1,16 @@
 const https = require('https');
-const client = require('redis').createClient( process.env.REDIS_URL );
-const FETCH_INTERVAL = 5000;
-const PRETTY_PRINT_JSON = true;
+const client = require('redis').createClient(process.env.REDIS_URL);
+const FETCH_INTERVAL = 30000;
 const API_REQUEST_ERROR_MESSAGE = 'How unfortunate! The API Request Failed';
 
 class Finance {
     constructor() {}
-    getIndicator(socket, indicator) {
+    getIndicator(socket, stocks) {
 
         if (Math.random(0, 1) < 0.1) {
             throw new Error(API_REQUEST_ERROR_MESSAGE);
         }
-        const path = '/finance/info?client=ig&q=' + indicator;
+        const path = '/finance/info?client=ig&q=' + stocks;
         https.get({
             port: 443,
             method: 'GET',
@@ -37,10 +36,10 @@ class Finance {
                         return false;
                     }
 
-                    let quotes = [];
+                    let items = [];
                     let lastTradeDate;
                     let lastTradeTS;
-                    let quote;
+                    let item;
                     let stock;
 
                     dataObj.forEach(d => {
@@ -48,7 +47,7 @@ class Finance {
                         lastTradeDate = new Date(lastTradeTS);
                         stock = d.t;
 
-                        quote = {
+                        item = {
                             ticker: d.t,
                             name: d.e + '/' + d.t,
                             exchange: d.e,
@@ -59,9 +58,9 @@ class Finance {
                             lastTradeDate: lastTradeDate
                         };
 
-                        quotes.push(quote);
+                        items.push(item);
 
-                        client.set(stock + ':' + lastTradeTS, JSON.stringify(quote), (err, response) => {
+                        client.set(stock + ':' + lastTradeTS, JSON.stringify(item), (err, response) => {
                             if (err) {
                                 console.error(err);
                             }
@@ -69,16 +68,16 @@ class Finance {
                         });
                     });
 
-                    socket.emit('fetch-indicators', PRETTY_PRINT_JSON ? JSON.stringify(quotes, null, 4) : JSON.stringify(quotes));
+                    socket.emit('fetch-stocks', items);
                 }
             });
         });
     }
 
-    trackIndicator(socket, indicator) {
-        this.tryIndicator(socket, indicator);
+    trackIndicator(socket, stocks) {
+        this.tryIndicator(socket, stocks);
         const timer = setInterval(() => {
-            this.tryIndicator(socket, indicator);
+            this.tryIndicator(socket, stocks);
         }, FETCH_INTERVAL);
 
         socket.on('disconnect', () => {
@@ -86,17 +85,29 @@ class Finance {
         });
     }
 
-    tryIndicator(socket, indicator) {
+    tryIndicator(socket, stocks) {
         try {
-            this.getIndicator(socket, indicator);
+            this.getIndicator(socket, stocks);
         } catch (e) {
             if (e.message === API_REQUEST_ERROR_MESSAGE) {
                 console.error('Reintentar!')
-                this.tryIndicator(socket, indicator);
+                this.tryIndicator(socket, stocks);
             } else {
                 throw new Error('¡Ups! Esto es el acabose, cerrando por fuera.')
             }
         }
+    }
+
+    getHistorical(socket, stock) {
+        client.get(stock + ':*', (err, response) => {
+            if (err) {
+                console.error(err);
+                response = [];
+            }
+            socket.emit('fetch-historical', response);
+            console.log(JSON.parse(response));
+        });
+
     }
 }
 
