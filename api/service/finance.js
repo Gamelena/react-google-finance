@@ -1,5 +1,6 @@
 const https = require('https');
-const client = require('redis').createClient( process.env.REDIS_URL );
+console.log(process.env);
+const client = require('redis').createClient( process.env.REDISCLOUD_URL );
 const FETCH_INTERVAL = 5000;
 const PRETTY_PRINT_JSON = true;
 const API_REQUEST_ERROR_MESSAGE = 'How unfortunate! The API Request Failed';
