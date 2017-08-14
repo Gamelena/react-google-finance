@@ -111,8 +111,14 @@ class Finance {
     }
 
     iterateHistoricalKeys(socket, keys) {
+        let items = [];
         client.mget(keys, (err, rows) => {
-            socket.emit('fetch-historical', rows);
+            rows.forEach(row => {
+                console.log('row:', row);
+                items.push(JSON.parse(row));
+            })
+
+            socket.emit('fetch-historical', items);
         });
     }
 }
