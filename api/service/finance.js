@@ -1,67 +1,95 @@
 const https = require('https');
+const moment = require('moment');
+const FETCH_INTERVAL = 5000;
+const PRETTY_PRINT_JSON = true;
+const API_REQUEST_ERROR_MESSAGE = 'How unfortunate! The API Request Failed';
 
-exports.finance = function () {
-    const FETCH_INTERVAL = 5000;
-    const PRETTY_PRINT_JSON = true;
+class Finance {
+    constructor() {}
+    getIndicator(socket, indicator) {
 
-    this.trackIndicator = (socket, indicator => {
-        getIndicator(socket, indicator);
-
-        var timer = setInterval(function() {
-            getIndicator(socket, indicator);
-        }, FETCH_INTERVAL);
-
-        socket.on('disconnect', () => {
-            clearInterval(timer);
-        });
-    });
-
-    this.test = function () {
-        console.log("test");
-    };
-
-    const getIndicator = (socket, indicator => {
+        if (Math.random(0, 1) < 0.1) {
+            throw new Error(API_REQUEST_ERROR_MESSAGE);
+        }
+        const path = '/finance/info?client=ig&q=' + indicator;
         https.get({
             port: 443,
             method: 'GET',
             hostname: 'www.google.com',
-            path: '/finance/info?client=ig&q=' + indicator,
+            path: path,
             timeout: 1000
-        }, function(response) {
-            if (Math.rand(0, 1) < 0.1) {
-                throw new Error('How unfortunate! The API Request Failed');
-            }
+        }, response => {
+            console.log('called ', path);
 
             response.setEncoding('utf8');
             let data = '';
 
-            response.on('data', function(chunk) {
+            response.on('data', chunk => {
                 data += chunk;
             });
 
-            response.on('end', function() {
+            response.on('end', () => {
                 if (data.length > 0) {
                     let dataObj;
-
                     try {
                         dataObj = JSON.parse(data.substring(3));
                     } catch (e) {
                         return false;
                     }
 
-                    let quote = {};
-                    quote.ticker = dataObj[0].t;
-                    quote.exchange = dataObj[0].e;
-                    quote.price = dataObj[0].l_cur;
-                    quote.change = dataObj[0].c;
-                    quote.change_percent = dataObj[0].cp;
-                    quote.last_trade_time = dataObj[0].lt;
-                    quote.dividend = dataObj[0].div;
-                    quote.yield = dataObj[0].yld;
+                    let quotes = [];
+                    let dateTs;
+                    let lastTradeDate;
+                    let ltTS;
+                    let dateTimeLT;
 
-                    socket.emit(indicator, PRETTY_PRINT_JSON ? JSON.stringify(quote, null, 4) : JSON.stringify(quote));
+                    dataObj.forEach(d => {
+                        ltTS = Date.parse(d.lt_dts);
+                        dateTimeLT = new Date(ltTS);
+
+                        quotes.push({
+                            ticker: d.t,
+                            name: d.e + '/' + d.t,
+                            exchange: d.e,
+                            valor: parseFloat(d.l_cur),
+                            change: d.c,
+                            changePercent: d.cp,
+                            lastTradeTime: d.lt,
+                            lastTradeDate: lastTradeDate,
+                            dividend: d.div,
+                            yield: d.yld
+                        });
+                    });
+
+                    socket.emit('fetch-indicators', PRETTY_PRINT_JSON ? JSON.stringify(quotes, null, 4) : JSON.stringify(quotes));
                 }
             });
         });
-    });
-};
+    }
+
+    trackIndicator(socket, indicator) {
+        this.tryIndicator(socket, indicator);
+        const timer = setInterval(() => {
+            this.tryIndicator(socket, indicator);
+        }, FETCH_INTERVAL);
+
+        socket.on('disconnect', () => {
+            clearInterval(timer);
+        });
+    }
+
+    tryIndicator(socket, indicator) {
+        try {
+            this.getIndicator(socket, indicator);
+        } catch (e) {
+            if (e.message === API_REQUEST_ERROR_MESSAGE) {
+                console.error('Reintentar!')
+                this.tryIndicator(socket, indicator);
+            } else {
+                throw new Error('¡Ups! Esto es el acabose, cerrando por fuera.')
+            }
+        }
+    }
+}
+
+module.exports = new Finance();

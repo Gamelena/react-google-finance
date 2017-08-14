@@ -2,7 +2,7 @@ import React from 'react';
 import expect from 'expect';
 import { shallow } from 'enzyme';
 
-import App from '../src/components/App';
+import App from '../src/components/HeaderCharts';
 
 describe('Component: App', () => {
   it('should render the App component', () => {

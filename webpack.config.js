@@ -22,7 +22,13 @@ module.exports = {
     devtool: 'source-map',
     devServer: {
         contentBase: './dist',
-        hot: true
+        hot: true,
+        proxy: {
+            '/socket.io/*': {
+                target: 'ws://localhost:8080',
+                ws: true
+            }
+        }
     },
     plugins: [
         new webpack.optimize.OccurrenceOrderPlugin(),

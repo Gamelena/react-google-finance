@@ -4,14 +4,14 @@ import PropTypes from 'prop-types';
 import '../assets/stylesheets/base.scss';
 
 
-const App = ({ name }) => {
+const HeaderCharts = ({ name }) => {
   return (
-    <h1>Hello, {name}!</h1>
+    <h1>{name}</h1>
   );
 };
 
-App.propTypes = {
+HeaderCharts.propTypes = {
   name: PropTypes.string,
 };
 
-export default App;
+export default HeaderCharts;

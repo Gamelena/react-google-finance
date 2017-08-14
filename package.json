@@ -1,7 +1,7 @@
 {
-  "name": "react-node-starter",
+  "name": "react-node-recharts",
   "version": "1.0.0",
-  "description": "an example for deploying a React + NodeJS app to Heroku",
+  "description": "React + Recharts + NodeJS app to Heroku",
   "main": "server.js",
   "scripts": {
     "build": "webpack --config webpack.prod.config.js",
@@ -26,9 +26,11 @@
     "expect": "^1.20.2",
     "express": "^4.15.2",
     "mocha": "^3.2.0",
+    "moment": "^2.18.1",
     "node-sass": "^4.5.2",
     "prop-types": "^15.5.8",
     "react": "^15.6.1",
+    "react-bootstrap": "^0.31.2",
     "react-dom": "^15.6.1",
     "recharts": "^1.0.0-alpha.3",
     "redis": "^2.8.0",
@@ -47,8 +49,8 @@
     "ignore-styles": "^5.0.1",
     "react-addons-test-utils": "^15.5.1",
     "react-test-renderer": "^15.5.4",
-    "webpack-dev-middleware": "^1.10.1",
-    "webpack-dev-server": "^2.4.2",
-    "webpack-hot-middleware": "^2.18.0"
+    "webpack-dev-middleware": "^1.12.0",
+    "webpack-dev-server": "^2.7.1",
+    "webpack-hot-middleware": "^2.18.2"
   }
 }
