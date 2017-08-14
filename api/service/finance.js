@@ -61,13 +61,14 @@ class Finance {
                         };
 
                         quotes.push(quote);
-
-                        // client.set(stock + ':' + lastTradeTS, JSON.stringify(quote), (err, response) => {
+/*
+                        client.set(stock + ':' + lastTradeTS, JSON.stringify(quote), (err, response) => {
                             if (err) {
                                 console.error(err);
                             }
                             console.log(response);
                         });
+                        */
                     });
 
                     socket.emit('fetch-indicators', PRETTY_PRINT_JSON ? JSON.stringify(quotes, null, 4) : JSON.stringify(quotes));
