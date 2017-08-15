@@ -130,6 +130,10 @@ class Finance {
                 ]);
             });
             console.log('items', items);
+
+            // reordenar por primer elemento del array (timestamp)
+            items.data = _(items.data).sortBy(a => a[0]);
+
             socket.emit('fetch-historical', items);
         });
     }
