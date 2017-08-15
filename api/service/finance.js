@@ -102,27 +102,28 @@ class Finance {
 
     getHistorical(socket, stock) {
         client.keys(stock + ':*', (err, keys) => {
-            console.log('keys:', keys);
             if (err || keys === null) {
                 console.error(err);
                 keys = [];
             }
             this.iterateHistoricalKeys(socket, keys);
         });
-
     }
 
     iterateHistoricalKeys(socket, keys) {
-        let items = [];
+        let items = []
         let item = {};
         client.mget(keys, (err, rows) => {
             rows.forEach(row => {
                 item = JSON.parse(row);
-                item.engTradeDate = moment.utc(item.lastTradeDate).format("YYYY-MM-DD HH:mm:ss");
-                items.push(item);
-            });
 
-            socket.emit('fetch-historical', _.sortBy(items, 'lastTradeDate'));
+                items.push([
+                    Date.parse(item.lastTradeDate),
+                    item.valor
+                ]);
+            });
+            console.log('rows and items', rows[0], items[0]);
+            socket.emit('fetch-historical', items);
         });
     }
 }

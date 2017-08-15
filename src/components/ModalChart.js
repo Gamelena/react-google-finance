@@ -2,33 +2,37 @@ import React from 'react';
 import Modal from 'react-bootstrap/lib/Modal';
 import Button from 'react-bootstrap/lib/Button';
 import PropTypes from 'prop-types';
-import { Line, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import ReactHighstock from 'react-highcharts/ReactHighstock.src';
 
 const ModalChart = ({data}) => {
+    const config = {
+        rangeSelector: {
+            selected: 1
+        },
+        title: {
+            text: 'Valor del Stock ' + name
+        },
+        series: [{
+            name: data[0].name,
+            data: data,
+            tooltip: {
+                valueDecimals: 2
+            }
+        }]
+    };
+
     const hide = () => {
         document.getElementById('historical').style.display = 'none';
     }
-
-    const titles = data[0];
 
     return (
         <div className="static-modal">
             <Modal.Dialog>
                 <Modal.Header>
-                    <Modal.Title>{titles.name}</Modal.Title>
+                    <Modal.Title>{data[0].name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <LineChart
-                        width={600} height={400} data={data}
-                        margin={{top: 5, right: 30, left: 20, bottom: 5}}
-                    >
-                        <XAxis dataKey="engTradeDate"/>
-                        <YAxis/>
-                        <CartesianGrid strokeDasharray="3 3"/>
-                        <Tooltip onClick={(e) => handleClick(e)}/>
-                        <Legend/>
-                        <Line type="monotone" dataKey="valor" onClick={(e) => handleClick(e)} fill="#8884d8"/>
-                    </LineChart>
+                    <ReactHighstock config={config} />,
                 </Modal.Body>
                 <Modal.Footer>
                     <Button onClick={() => hide()}>Close</Button>

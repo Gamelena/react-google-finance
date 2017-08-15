@@ -8,12 +8,13 @@ const server = http.createServer(app);
 const io = require('socket.io').listen(server,  { path: '/socket.io' });
 
 
-const webpack = require('webpack');
-const webpackConfig = require('./webpack.config');
-const compiler = webpack(webpackConfig);
-
 // Workaround para usar webpack hot reloading con socket.io, no disponible al usar webpack-dev-server.
 if (process.env.NODE_ENV !== 'production') {
+
+    const webpack = require('webpack');
+    const webpackConfig = require('./webpack.config');
+    const compiler = webpack(webpackConfig);
+
     app.use(require('webpack-dev-middleware')(compiler, {
         noInfo: true,
         publicPath: webpackConfig.output.publicPath,
