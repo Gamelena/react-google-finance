@@ -10,11 +10,11 @@ const ModalChart = ({data}) => {
             selected: 1
         },
         title: {
-            text: 'Valor del Stock ' + name
+            text: 'Valor del Stock ' + data.name
         },
         series: [{
-            name: data[0].name,
-            data: data,
+            name: data.name,
+            data: data.data,
             tooltip: {
                 valueDecimals: 2
             }
@@ -29,7 +29,7 @@ const ModalChart = ({data}) => {
         <div className="static-modal">
             <Modal.Dialog>
                 <Modal.Header>
-                    <Modal.Title>{data[0].name}</Modal.Title>
+                    <Modal.Title>{data.name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <ReactHighstock config={config} />,
@@ -43,7 +43,7 @@ const ModalChart = ({data}) => {
 };
 
 ModalChart.propTypes = {
-    data: PropTypes.array
+    data: PropTypes.object
 };
 
 export default ModalChart;

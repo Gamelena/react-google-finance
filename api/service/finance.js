@@ -111,18 +111,25 @@ class Finance {
     }
 
     iterateHistoricalKeys(socket, keys) {
-        let items = []
-        let item = {};
+        let items = {
+            name: null,
+            data: []
+        }
+        let item;
         client.mget(keys, (err, rows) => {
+            if (rows[0]) {
+                items.name = JSON.parse(rows[0]).name;
+            }
+
             rows.forEach(row => {
                 item = JSON.parse(row);
 
-                items.push([
+                items.data.push([
                     Date.parse(item.lastTradeDate),
                     item.valor
                 ]);
             });
-            console.log('rows and items', rows[0], items[0]);
+            console.log('items', items);
             socket.emit('fetch-historical', items);
         });
     }
