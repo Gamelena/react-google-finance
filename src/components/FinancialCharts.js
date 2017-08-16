@@ -1,9 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import moment from 'moment';
 import ModalChart from './ModalChart';
+import HeaderCharts from './HeaderCharts';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import IO from 'socket.io-client';
 import PropTypes from 'prop-types';
+import _ from 'underscore';
 const socket = IO({ path: '/socket.io' });
 
 
@@ -11,6 +14,17 @@ socket.emit('req-stocks', {stocks: 'AAPL,ABC,MSFT,TSLA,F'});
 
 socket.on('fetch-stocks', data => {
     ReactDOM.render(<FinancialCharts data={data}/>, document.getElementById('charts'));
+
+    let lowestDate = _.max(data, function(item) {
+        return Date.parse(item.lastTradeDate);
+    });
+
+    let lastDateUpdate = 'Valores actualizados al ' +moment(Date.parse(lowestDate.lastTradeDate)).format('YYYY-MM-DD hh:mm:ss');
+
+    ReactDOM.render(<HeaderCharts name='Valores de Stocks Financieros' description={lastDateUpdate} />, document.getElementById('header-charts'));
+
+
+
 });
 
 socket.on('fetch-historical', data => {
@@ -21,7 +35,6 @@ socket.on('fetch-historical', data => {
 
 const FinancialCharts = ({data}) => {
     const handleClick = item => {
-        console.log(item);
         socket.emit('req-historical', {stock: item.ticker});
     }
 

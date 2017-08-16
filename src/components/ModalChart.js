@@ -28,14 +28,14 @@ const ModalChart = ({data}) => {
     return (
         <div className="static-modal">
             <Modal.Dialog>
-                <Modal.Header>
+                <Modal.Header closeButton onClick={() => hide()}>
                     <Modal.Title>{data.name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <ReactHighstock config={config} />,
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={() => hide()}>Close</Button>
+                    <Button bsStyle="primary" onClick={() => hide()}>Close</Button>
                 </Modal.Footer>
             </Modal.Dialog>
         </div>
