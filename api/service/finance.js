@@ -1,5 +1,4 @@
 const https = require('https');
-const moment = require('moment');
 const _ = require('underscore');
 const client = require('redis').createClient(process.env.REDIS_URL);
 const FETCH_INTERVAL = 30000;

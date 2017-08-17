@@ -19,7 +19,7 @@ socket.on('fetch-stocks', data => {
         return Date.parse(item.lastTradeDate);
     });
 
-    let lastDateUpdate = 'Valores actualizados al ' +moment(Date.parse(lowestDate.lastTradeDate)).format('YYYY-MM-DD hh:mm:ss');
+    let lastDateUpdate = 'En $USD. Valores actualizados al ' +moment(Date.parse(lowestDate.lastTradeDate)).format('YYYY-MM-DD hh:mm:ss');
 
     ReactDOM.render(<HeaderCharts name='Valores de Stocks Financieros' description={lastDateUpdate} />, document.getElementById('header-charts'));
 
